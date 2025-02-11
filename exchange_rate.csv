@@ -1,4 +1,52 @@
-Currency,Rate
-EUR,0.93
-GBP,0.8
-INR,82.95
+,currency,rate
+0,Argentine Peso,1055.616425
+1,Australian Dollar,1.588343
+2,Bahraini Dinar,0.376000
+3,Botswana Pula,13.869227
+4,Brazilian Real,5.763866
+5,Bruneian Dollar,1.353032
+6,Bulgarian Lev,1.887621
+7,Canadian Dollar,1.429054
+8,Chilean Peso,961.595389
+9,Chinese Yuan Renminbi,7.307697
+10,Colombian Peso,4141.494851
+11,Czech Koruna,24.222261
+12,Danish Krone,7.198681
+13,Euro,0.965125
+14,Hong Kong Dollar,7.791720
+15,Hungarian Forint,388.784708
+16,Icelandic Krona,141.495302
+17,Indian Rupee,86.784268
+18,Indonesian Rupiah,16348.404183
+19,Iranian Rial,42078.879357
+20,Israeli Shekel,3.590268
+21,Japanese Yen,152.443939
+22,Kazakhstani Tenge,508.276715
+23,South Korean Won,1450.077929
+24,Kuwaiti Dinar,0.308801
+25,Libyan Dinar,4.920087
+26,Malaysian Ringgit,4.469821
+27,Mauritian Rupee,46.990592
+28,Mexican Peso,20.555693
+29,Nepalese Rupee,138.919917
+30,New Zealand Dollar,1.768111
+31,Norwegian Krone,11.194709
+32,Omani Rial,0.385019
+33,Pakistani Rupee,279.217643
+34,Philippine Peso,58.155185
+35,Polish Zloty,4.027371
+36,Qatari Riyal,3.640000
+37,Romanian New Leu,4.803840
+38,Russian Ruble,96.499518
+39,Saudi Arabian Riyal,3.750000
+40,Singapore Dollar,1.353032
+41,South African Rand,18.508902
+42,Sri Lankan Rupee,297.588608
+43,Swedish Krona,10.859641
+44,Swiss Franc,0.913379
+45,Taiwan New Dollar,32.828784
+46,Thai Baht,34.059142
+47,Trinidadian Dollar,6.798274
+48,Turkish Lira,36.045014
+49,Emirati Dirham,3.672500
+50,British Pound,0.803392
