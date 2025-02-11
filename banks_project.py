@@ -17,12 +17,16 @@ def log_progress(message):
     with open("./code_log.txt","a") as f: 
         f.write(timestamp + ' : ' + message + '\n')
 
-def todays_rates(url_rates):
+def todays_rates():
+
+    url_rates = "https://www.x-rates.com/table/?from=USD&amount=1"
     response = requests.get(url_rates)
     soup = BeautifulSoup(response.text, 'html.parser')
 
-    rates = soup.find_all('tbody')
+    tab = soup.find('table', class_="tablesorter ratesTable")
+    rates = tab.find_all('tbody')
     todays_rate = []
+
     for rate in rates:
         sections = rate.find_all('tr')
 
@@ -35,26 +39,29 @@ def todays_rates(url_rates):
 
     return xR
 
-def extract(url, table_attribs):
+def extract():
     #  This function aims to extract the required information from the website and save it to a data frame
 
+    url = "https://en.wikipedia.org/wiki/List_of_largest_banks"
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
 
-    table_attribs = ['Name', 'MarketCap_USDollar_Billion']
-    dfc = pd.DataFrame(columns=table_attribs)
+    table = soup.find_all('table')[2]
+    rows = table.find_all('tbody')
+    banks = []
 
-    table = soup.find('tbody')
-    rows = table.find_all('tr')
-    data = []
-    for row in rows[1:]: 
-        item = [text.strip() for text in row.text.split('\n') if text.strip()]
-        item = item[1:]
-        if len(item) >= 2:  # Ensure there are at least two columns
-            data.append({'Name': item[0], 'MarketCap_USDollar_Billion': item[1]})
-            
-    df = pd.concat([dfc, pd.DataFrame(data)], ignore_index=True)
-    df['MarketCap_USDollar_Billion'] = df['MarketCap_USDollar_Billion'].str.replace(',', '').astype(float)
+    for row in rows: 
+        items = row.find_all('tr')
+        for item in items[2:]:
+            bank = item.text.strip().split('\n')
+            bank_name = bank[0]
+            market_cap = bank[4]
+            banks.append([bank_name, market_cap])
+
+    df = pd.DataFrame(banks, columns=['Bank Name', 'MarketCap_USDollar_Billion'])
+    empty_rows = df[df['MarketCap_USDollar_Billion'] == ''].index
+    df.drop(empty_rows, inplace=True)
+    df['MarketCap_USDollar_Billion'] = df['MarketCap_USDollar_Billion'].astype(float)
 
 
     return df
@@ -88,15 +95,6 @@ def run_query(query_statement, sql_connection):
     query_output = pd.read_sql(query_statement, sql_connection)
     print(query_output)
 
-''' Here, you define the required entities and call the relevant
-functions in the correct order to complete the project. Note that this
-portion is not inside any function.'''
-
-url = "https://en.wikipedia.org/wiki/List_of_largest_banks"
-
-url_rates =  "https://www.x-rates.com/table/?from=USD&amount=1"
-
-table_attribs = ["Country", "MC_USD_Billion"]
 
 table_name = 'Largest_banks'
 
@@ -105,7 +103,10 @@ xR_path = './exchange_rate.csv'
 
 log_progress('Preliminaries complete. Initiating ETL process')
 
-df = extract(url, table_attribs)
+todays_rates()
+log_progress('Successfully extracted exchange rates as at the time this message was logged and stored in a CSV file')
+
+df = extract()
 log_progress('Data extraction complete. Initiating Transformation process')
 
 df = transform(df, xR_path)
