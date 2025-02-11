@@ -17,16 +17,31 @@ def log_progress(message):
     with open("./code_log.txt","a") as f: 
         f.write(timestamp + ' : ' + message + '\n')
 
-    
+def todays_rates(url_rates):
+    response = requests.get(url_rates)
+    soup = BeautifulSoup(response.text, 'html.parser')
+
+    rates = soup.find_all('tbody')
+    todays_rate = []
+    for rate in rates:
+        sections = rate.find_all('tr')
+
+        for section in sections:
+            exchange = section.text.strip().split('\n')[:-1]
+            todays_rate.append(exchange)
+            
+    xR = pd.DataFrame(todays_rate, columns=['currency', 'rate'])
+    xR.to_csv('exchange_rate.csv')
+
+    return xR
+
 def extract(url, table_attribs):
-    ''' This function aims to extract the required
-    information from the website and save it to a data frame. The
-    function returns the data frame for further processing. '''
+    #  This function aims to extract the required information from the website and save it to a data frame
 
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
 
-    table_attribs = ['Name', 'MC_USD_Billion']
+    table_attribs = ['Name', 'MarketCap_USDollar_Billion']
     dfc = pd.DataFrame(columns=table_attribs)
 
     table = soup.find('tbody')
@@ -36,36 +51,33 @@ def extract(url, table_attribs):
         item = [text.strip() for text in row.text.split('\n') if text.strip()]
         item = item[1:]
         if len(item) >= 2:  # Ensure there are at least two columns
-            data.append({'Name': item[0], 'MC_USD_Billion': item[1]})
+            data.append({'Name': item[0], 'MarketCap_USDollar_Billion': item[1]})
             
     df = pd.concat([dfc, pd.DataFrame(data)], ignore_index=True)
-    df['MC_USD_Billion'] = df['MC_USD_Billion'].str.replace(',', '').astype(float)
+    df['MarketCap_USDollar_Billion'] = df['MarketCap_USDollar_Billion'].str.replace(',', '').astype(float)
 
 
     return df
 
-def transform(df, csv_path):
-    ''' This function accesses the CSV file for exchange rate
-    information, and adds three columns to the data frame, each
-    containing the transformed version of Market Cap column to
-    respective currencies'''
-    exchange = pd.read_csv(csv_path)
+def transform(df, xR_path):
+    #  Transforms Market Cap values into multiple currencies using rates from the exchange rate CSV file.
+
+    exchange = pd.read_csv(xR_path)
     exchange_rate = exchange.set_index('Currency').to_dict()['Rate']
 
-    df['MC_GBP_Billion'] = [np.round(x*exchange_rate['GBP'],2) for x in df['MC_USD_Billion']]
-    df['MC_EUR_Billion'] = [np.round(x*exchange_rate['EUR'],2) for x in df['MC_USD_Billion']]
-    df['MC_INR_Billion'] = [np.round(x*exchange_rate['INR'],2) for x in df['MC_USD_Billion']]
+    for currency, rate in exchange_rate.items():
+        df[f'MarketCap_{currency}_Billion'] = np.round(df['MarketCap_USDollar_Billion'] * rate, 2)
 
     return df
 
-def load_to_csv(df, output_path):
-    ''' This function saves the final data frame as a CSV file in
-    the provided path. Function returns nothing.'''
-    df.to_csv(output_path)
+def load_to_csv(df):
+    # This function saves the final data frame as a CSV file 
+
+    df.to_csv('Largest_banks.csv')
 
 def load_to_db(df, sql_connection, table_name):
-    ''' This function saves the final data frame to a database
-    table with the provided name. Function returns nothing.'''
+    # This function saves the final data frame to a database table with the provided table name 
+
     df.to_sql(table_name, sql_connection, if_exists='replace', index=False)
 
 
@@ -81,20 +93,25 @@ functions in the correct order to complete the project. Note that this
 portion is not inside any function.'''
 
 url = "https://en.wikipedia.org/wiki/List_of_largest_banks"
+
+url_rates =  "https://www.x-rates.com/table/?from=USD&amount=1"
+
 table_attribs = ["Country", "MC_USD_Billion"]
+
 table_name = 'Largest_banks'
-csv_path = './exchange_rate.csv'
-output_path = './Largest_banks.csv'
+
+xR_path = './exchange_rate.csv'
+
 
 log_progress('Preliminaries complete. Initiating ETL process')
 
 df = extract(url, table_attribs)
 log_progress('Data extraction complete. Initiating Transformation process')
 
-df = transform(df, csv_path)
+df = transform(df, xR_path)
 log_progress('Data transformation complete. Initiating loading process')
 
-load_to_csv(df, output_path)
+load_to_csv(df)
 log_progress('Data saved to CSV file')
 
 sql_connection = sqlite3.connect('Banks.db')
