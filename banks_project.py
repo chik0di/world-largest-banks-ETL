@@ -8,13 +8,16 @@ import numpy as np
 import sqlite3
 from datetime import datetime  
 
-def log_progress(message):
-    ''' This function logs the mentioned message of a given stage of the
-    code execution to a log file. Function returns nothing'''
-    timestamp_format = '%Y-%h-%d-%H:%M:%S' # Year-Monthname-Day-Hour-Minute-Second 
-    now = datetime.now() # get current timestamp 
-    timestamp = now.strftime(timestamp_format) 
-    with open("./code_log.txt","a") as f: 
+
+def log_progress(message, log_file="./code_log.txt", overwrite=False):
+    """Logs a message to a file, overwriting only if overwrite=True (typically at script start)."""
+    
+    timestamp_format = '%Y-%b-%d-%H:%M:%S'  # Year-Monthname-Day-Hour-Minute-Second
+    now = datetime.now()  # Get current timestamp
+    timestamp = now.strftime(timestamp_format)
+
+    mode = "w" if overwrite else "a"  # "w" overwrites, "a" appends
+    with open(log_file, mode) as f:
         f.write(timestamp + ' : ' + message + '\n')
 
 def todays_rates():
@@ -29,7 +32,6 @@ def todays_rates():
 
     for rate in rates:
         sections = rate.find_all('tr')
-
         for section in sections:
             exchange = section.text.strip().split('\n')[:-1]
             todays_rate.append(exchange)
@@ -63,14 +65,13 @@ def extract():
     df.drop(empty_rows, inplace=True)
     df['MarketCap_USDollar_Billion'] = df['MarketCap_USDollar_Billion'].astype(float)
 
-
     return df
 
 def transform(df, xR_path):
     #  Transforms Market Cap values into multiple currencies using rates from the exchange rate CSV file.
 
     exchange = pd.read_csv(xR_path)
-    exchange_rate = exchange.set_index('Currency').to_dict()['Rate']
+    exchange_rate = exchange.set_index('currency').to_dict()['rate']
 
     for currency, rate in exchange_rate.items():
         df[f'MarketCap_{currency}_Billion'] = np.round(df['MarketCap_USDollar_Billion'] * rate, 2)
@@ -97,20 +98,19 @@ def run_query(query_statement, sql_connection):
 
 
 table_name = 'Largest_banks'
-
 xR_path = './exchange_rate.csv'
 
 
-log_progress('Preliminaries complete. Initiating ETL process')
+log_progress('Preliminaries complete. Initiating ETL process', overwrite=True)
 
 todays_rates()
 log_progress('Successfully extracted exchange rates as at the time this message was logged and stored in a CSV file')
 
 df = extract()
-log_progress('Data extraction complete. Initiating Transformation process')
+log_progress('Data extraction complete. Initiating Transformation process...')
 
 df = transform(df, xR_path)
-log_progress('Data transformation complete. Initiating loading process')
+log_progress('Data transformation complete. Initiating loading process...')
 
 load_to_csv(df)
 log_progress('Data saved to CSV file')
@@ -121,16 +121,16 @@ log_progress('SQL Connection initiated.')
 load_to_db(df, sql_connection, table_name)
 log_progress('Data loaded to Database as table. Running the queries')
 
-query_statement = f"SELECT * from {table_name}"
-run_query(query_statement, sql_connection)
+# query_statement = f"SELECT * from {table_name}"
+# run_query(query_statement, sql_connection)
 
-query_statement = f"SELECT AVG(MC_GBP_Billion) FROM {table_name}"
-run_query(query_statement, sql_connection)
+# query_statement = f"SELECT AVG(MC_GBP_Billion) FROM {table_name}"
+# run_query(query_statement, sql_connection)
 
-query_statement = f"SELECT Name  FROM {table_name} LIMIT 5"
-run_query(query_statement, sql_connection)
+# query_statement = f"SELECT Name  FROM {table_name} LIMIT 5"
+# run_query(query_statement, sql_connection)
 
-log_progress('Queries run successfully')
+# log_progress('Queries run successfully')
 
 log_progress('Process Complete.')
 
