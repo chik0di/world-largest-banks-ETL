@@ -1,6 +1,6 @@
 <h1 align="center">Global Bank Market Capitalization ETL Pipeline</h1>
    
-![Pipeline](https://i.imgur.com/KqfKJme.png)
+![Pipeline](https://i.imgur.com/nNukcJ0.png)
 
 A multi-national firm has hired you as a data engineer. Your job is to access and process data as per requirements.
 
@@ -54,4 +54,11 @@ The libraries needed to run the script are as follows:
 
 - datetime - The library containing the function datetime used for extracting the timestamp for logging purposes.
 
-<h2 align="right">Assigned By</h2>
+
+<h3 align="right">Assigned By</h3>
+<p align="right">
+  <a href="https://www.coursera.org/account/accomplishments/verify/TG89DJFGV7VD?utm_source=link&utm_medium=certificate&utm_content=cert_image&utm_campaign=sharing_cta&utm_product=course" title="View Certificate from IBM on Coursera">
+    <img width="100" src="https://img.icons8.com/nolan/64/ibm.png" alt="IBM" />
+  </a>
+</p>
+
