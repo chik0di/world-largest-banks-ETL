@@ -54,6 +54,14 @@ The libraries needed to run the script are as follows:
 
 - datetime - The library containing the function datetime used for extracting the timestamp for logging purposes.
 
+Before running the script, make sure you have Python installed (preferably Python 3.6 or higher).
+
+Install the required Python libraries by running the following command:
+
+```bash
+pip install requests beautifulsoup4 pandas numpy
+```
+
 
 <h3 align="right">Assigned By</h3>
 <p align="right">
