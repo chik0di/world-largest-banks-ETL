@@ -1,12 +1,17 @@
-## Project Scenario
+<h1 align="center">Global Bank Market Capitalization ETL Pipeline</h1>
+   
+![Pipeline](https://i.imgur.com/KqfKJme.png)
+
 A multi-national firm has hired you as a data engineer. Your job is to access and process data as per requirements.
 
 Your boss asked you to compile the list of the top 10 largest banks in the world ranked by market capitalization in billion USD. Further, you need to transform the data and store it in various currencies per current exchange rate information.
 
 You should save the processed information table locally in a CSV format and as a database table. Managers from different countries will query the database table to extract the list and note the market capitalization value in their own currency.
 
-## Objectives 
-- Extract current exchange rate information from some website. 
+
+<h1 align="center">Objectives</h1>
+
+- Extract current exchange rate information from [x-rates](https://www.x-rates.com/).
 
 - Extract the tabular information from the given URL for top banks by Market Capitalization, and save it to a data frame.
 
@@ -16,7 +21,7 @@ You should save the processed information table locally in a CSV format and as a
 
 - Load the transformed data frame to an output CSV file.
 
-- Load the transformed data frame to an SQL database server as a table.
+- Load the transformed data frame to an SQLite database server as a table.
 
 - Run queries on the database table.
 
@@ -33,17 +38,20 @@ You should save the processed information table locally in a CSV format and as a
 - While executing the data initialization commands and function calls, maintain appropriate log entries.
 
 
-## Initial setup
+<h1 align="center">Initial setup</h1>
+
 The libraries needed to run the script are as follows:
 
-- requests - The library used for accessing the information from the URL.
+- requests - used for accessing the information from the URL.
 
-- bs4 - The library containing the BeautifulSoup function used for webscraping.
+- bs4 - containing the BeautifulSoup function used for webscraping.
 
-- pandas - The library used for processing the extracted data, storing it to required formats and communicating with the databases.
+- pandas - used for processing the extracted data, storing it to required formats and communicating with the databases.
 
-- sqlite3 - The library required to create a database server connection.
+- sqlite3 - required to create a database server connection.
 
-- numpy - The library required for the mathematical rounding operation as required in the objectives.
+- numpy - required for the mathematical rounding operation as required in the objectives.
 
 - datetime - The library containing the function datetime used for extracting the timestamp for logging purposes.
+
+<h2 align="right">Assigned By</h2>
